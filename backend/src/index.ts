@@ -1,27 +1,23 @@
 import { Hono } from 'hono'
+import { PrismaClient } from './generated/prisma/edge'
+import { withAccelerate } from '@prisma/extension-accelerate'
+import { decode, sign, verify } from 'hono/jwt'
+import { JWTPayload } from 'hono/utils/jwt/types'
+import { userRouter } from './routes/user'
+import { blogRouter } from './routes/blog'
 
-const app = new Hono()
+type Environment = {
+  Bindings: {
+    DATABASE_URL: string
+    JWT_SECRET: string
+  }
+  Variables: {
+    userId:JWTPayload[string]
+  }
+}
 
-app.post('/api/v1/signin', (c)=>{
-  return c.text("Signin")
-})
-
-app.post('/api/v1/signup', (c)=>{
-  return c.text("Signup")
-})
-
-app.post('/api/v1/blog', (c)=>{
-  return c.text("blog")
-})
-
-app.put('/api/v1/blog', (c)=>{
-  return c.text("put blog")
-})
-
-app.get('/api/v1/blog/:id', (c)=> {
-  return c.text("Get blog")
-})
-
-
+const app = new Hono<Environment>()
+app.route("/api/v1/user", userRouter)
+app.route("/api/v1/blog", blogRouter)
 
 export default app
