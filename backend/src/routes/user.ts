@@ -1,7 +1,8 @@
 import { Hono } from "hono";
-import { sign, verify } from "hono/jwt";
+import { sign } from "hono/jwt";
 import { PrismaClient } from "../generated/prisma/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
+import { signinInput, signupInput } from "@lucky452/medium-blog-common";
 
 type Environment = {
   Bindings: {
@@ -22,8 +23,16 @@ userRouter.post('/signup', async (c) => {
 
   const body = await c.req.json()
 
-
   try {
+    const { success } = signupInput.safeParse(body)
+
+    if (!success) {
+      c.status(411)
+      return c.json({
+        "error": "Invalid Input"
+      })
+    }
+
     const user = await prisma.user.create({
       data: {
         email: body.email,
@@ -38,7 +47,7 @@ userRouter.post('/signup', async (c) => {
       jwt: token
     })
   }
-  catch(e) {
+  catch (e) {
     console.log(e)
     c.status(403)
     return c.json({
@@ -60,7 +69,16 @@ userRouter.post('/signin', async (c) => {
 
   const body = await c.req.json()
 
-  try{
+  try {
+    const {success} = signinInput.safeParse(body)
+
+    if (!success) {
+      c.status(411)
+      return c.json({
+        "error": "Invalid Input"
+      })
+    }
+
     const user = await prisma.user.findUnique({
       select: {
         id: true
@@ -70,17 +88,17 @@ userRouter.post('/signin', async (c) => {
         password: body.password
       }
     })
-  
+
     if (!user) {
       c.status(403)
       return c.json({ error: "Invalid email or password" })
     }
-  
+
     const token = await sign({ id: user.id }, c.env.JWT_SECRET)
-  
+
     return c.json({ "jwt": token })
   }
-  catch(e) {
+  catch (e) {
     console.log(e)
     c.status(411)
     return c.text("Something went wrong.")
