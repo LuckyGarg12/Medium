@@ -6,6 +6,7 @@ interface blogType {
     id:string,
     title:string,
     content:string,
+    publishDate:string | Date,
     author:{
         name:string
     }
@@ -16,6 +17,7 @@ export const useBlog = (id:string|undefined) => {
         id:"",
         title:"",
         content:"",
+        publishDate:"",
         author:{
             name:""
         }

@@ -6,6 +6,7 @@ interface blogType {
     id:string,
     title:string,
     content:string,
+    publishDate:string | Date
     author:{
         name:string|null
     }

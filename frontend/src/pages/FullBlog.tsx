@@ -4,7 +4,7 @@ import { useBlog } from "../hooks/BlogIdHook"
 import { AppBar } from "../components/AppBar"
 import { Loading } from "../components/Loading"
 
-
+const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
 export const FullBlog = ()=> {
     const { id } = useParams()
@@ -18,8 +18,9 @@ export const FullBlog = ()=> {
             </div>
         )
     }
-    
 
+    blog.publishDate = new Date(blog.publishDate)
+    
     return (
         <div>
             <AppBar />
@@ -30,7 +31,7 @@ export const FullBlog = ()=> {
                             {blog.title}
                         </div>
                         <div className="text-slate-400 py-3">
-                            Posted on November 12, 2024
+                            Posted on {`${months[blog.publishDate.getMonth()]} ${blog.publishDate.getDate()}, ${blog.publishDate.getFullYear()}`}
                         </div>
                         <div className="text-gray-700">
                             {blog.content}
