@@ -2,7 +2,7 @@
 import { useParams } from "react-router-dom"
 import { useBlog } from "../hooks/BlogIdHook"
 import { AppBar } from "../components/AppBar"
-import { FullBlogSkeleton } from "../components/FullBlogSkeleton"
+import { Loading } from "../components/Loading"
 
 
 
@@ -14,7 +14,7 @@ export const FullBlog = ()=> {
         return (
             <div>
                 <AppBar />     
-                <FullBlogSkeleton />           
+                <Loading />           
             </div>
         )
     }

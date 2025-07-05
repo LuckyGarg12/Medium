@@ -1,4 +1,4 @@
-export const FullBlogSkeleton = () => {
+export const Loading = () => {
     return (
         <div className="flex justify-center flex-col h-screen w-screen top-0 left-0 fixed">
             <div className="flex justify-center">
