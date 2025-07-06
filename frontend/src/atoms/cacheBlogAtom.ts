@@ -11,4 +11,4 @@ export interface blogType {
 }
 
 export const cacheBlogAtom = atom<{[key:string]: blogType}>({});
-export const cacheTimeout = atom<number>();
+export const lastUpdateAtom = atom<{[key:string]: Date}>();

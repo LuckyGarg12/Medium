@@ -2,7 +2,9 @@ import { useEffect, useState } from "react"
 import { BACKEND_URL } from "../config"
 import axios from "axios"
 import { useAtom } from "jotai"
-import { cacheBlogAtom, type blogType } from "../atoms/cacheBlogAtom"
+import { cacheBlogAtom, lastUpdateAtom, type blogType } from "../atoms/cacheBlogAtom"
+
+const REFRESH_TIME = 120 // In seconds
 
 export const useBlog = (id: string) => {
     const emptyBlog = {
@@ -15,9 +17,10 @@ export const useBlog = (id: string) => {
         }
     }
     const [cacheBlog, setCacheBlog] = useAtom(cacheBlogAtom)
+    const [lastUpdate, setLastUpdate] = useAtom(lastUpdateAtom)
     const [blog, setBlog] = useState<blogType>(() => {
-        console.log(cacheBlog)
-        if (cacheBlog[id] !== undefined) {
+        console.log(lastUpdate)
+        if (cacheBlog[id] !== undefined && (lastUpdate && (new Date().getTime() - lastUpdate[id].getTime()) / 1000 < REFRESH_TIME)) {
             return cacheBlog[id]
         }
         return emptyBlog
@@ -30,9 +33,12 @@ export const useBlog = (id: string) => {
             }
         }).then((res) => {
             setBlog(res.data.blog);
-            let newCache = {...cacheBlog}
-            newCache[res.data.blog.id] = res.data.blog
-            setCacheBlog(newCache)
+            setCacheBlog((prev) => {
+                return {...prev, [res.data.blog.id]: res.data.blog}
+            })
+            setLastUpdate((prev) => {
+                return {...prev, [res.data.blog.id]: new Date()}
+            })
         })
     }
 

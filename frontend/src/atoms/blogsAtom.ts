@@ -12,4 +12,4 @@ interface blogType {
 
 export const blogsAtom = atom<blogType[]> ([])
 
-export const timeoutIdAtom = atom<number>()
+export const lastUpdateAtom = atom<Date>()
