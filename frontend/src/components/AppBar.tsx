@@ -1,9 +1,11 @@
 import { Link, useNavigate } from "react-router-dom"
 import { AvatarAppBar } from "./Avatar"
+import { useAtomValue } from "jotai";
+import { userAtom } from "../atoms/userAtom";
 
 
 export const AppBar = () => {
-    const username = "Lucky";
+    const username = useAtomValue(userAtom).name;
     const navigate = useNavigate();
 
     return(
@@ -26,7 +28,7 @@ export const AppBar = () => {
                 }}>
                     Sign Out
                 </button>
-                <AvatarAppBar name={username} />
+                <AvatarAppBar name={(username)?username:"Anonymous"} />
             </div>
         </div>
     )

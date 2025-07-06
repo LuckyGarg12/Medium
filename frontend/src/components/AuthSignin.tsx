@@ -7,6 +7,8 @@ import axios from "axios";
 import { BACKEND_URL } from "../config";
 import { Alert } from "./Alert";
 import { LoadingFullscreen } from "./LoadingFullscreen";
+import { useSetAtom } from "jotai";
+import { userAtom } from "../atoms/userAtom";
 
 export const AuthSignin = ()=> {
     const [signinInput, setSigninInput] = useState<SigninInput>({
@@ -16,6 +18,7 @@ export const AuthSignin = ()=> {
     const [showAlert, setShowAlert] = useState(false)
     const [isloading, setIsLoading] = useState(false)
     const [alertMessage, setAlertMessage] = useState("")
+    const setUser = useSetAtom(userAtom)
     const navigate = useNavigate()
 
     async function sendRequest() {
@@ -24,6 +27,7 @@ export const AuthSignin = ()=> {
             const response = await axios.post(`${BACKEND_URL}/api/v1/user/signin`, signinInput)
             console.log(response.data)
             localStorage.setItem("token", response.data.jwt)
+            setUser({name:response.data.name, email:response.data.name})
             setIsLoading(false)
             setShowAlert(false)
             navigate("/blogs")

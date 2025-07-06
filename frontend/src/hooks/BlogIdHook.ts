@@ -1,42 +1,48 @@
 import { useEffect, useState } from "react"
 import { BACKEND_URL } from "../config"
 import axios from "axios"
+import { useAtom } from "jotai"
+import { cacheBlogAtom, type blogType } from "../atoms/cacheBlogAtom"
 
-interface blogType {
-    id:string,
-    title:string,
-    content:string,
-    publishDate:string | Date,
-    author:{
-        name:string
-    }
-}
-
-export const useBlog = (id:string|undefined) => {
-    const [blog, setBlog] = useState<blogType>({
-        id:"",
-        title:"",
-        content:"",
-        publishDate:"",
-        author:{
-            name:""
+export const useBlog = (id: string) => {
+    const emptyBlog = {
+        id: "",
+        title: "",
+        content: "",
+        publishDate: "",
+        author: {
+            name: ""
         }
+    }
+    const [cacheBlog, setCacheBlog] = useAtom(cacheBlogAtom)
+    const [blog, setBlog] = useState<blogType>(() => {
+        console.log(cacheBlog)
+        if (cacheBlog[id] !== undefined) {
+            return cacheBlog[id]
+        }
+        return emptyBlog
     })
-    const [loading, setLoading] = useState(true)
+
+    function getBlog() {
+        axios.get(`${BACKEND_URL}/api/v1/blog/${id}`, {
+            headers: {
+                Authorization: "Bearer " + localStorage.getItem("token")
+            }
+        }).then((res) => {
+            setBlog(res.data.blog);
+            let newCache = {...cacheBlog}
+            newCache[res.data.blog.id] = res.data.blog
+            setCacheBlog(newCache)
+        })
+    }
 
     useEffect(() => {
-        axios.get(`${BACKEND_URL}/api/v1/blog/${id}`, {
-            headers:{
-                Authorization:"Bearer "+localStorage.getItem("token")
-            }
-        }).then((res)=> {
-            setBlog(res.data.blog);
-            setLoading(false)
-        })
+        if (blog.id === "") {
+            getBlog()
+        }
     }, [])
 
     return {
-        loading,
         blog
     }
 }

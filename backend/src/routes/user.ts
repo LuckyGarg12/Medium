@@ -45,11 +45,11 @@ userRouter.post('/signup', async (c) => {
 
     return c.json({
       jwt: token,
-      username: user.name
+      name: user.name,
+      email: user.email
     })
   }
   catch (e) {
-    console.log(e)
     c.status(403)
     return c.json({
       "error": "User already exists"
@@ -83,7 +83,8 @@ userRouter.post('/signin', async (c) => {
     const user = await prisma.user.findUnique({
       select: {
         id: true,
-        name: true
+        name: true,
+        email:true
       },
       where: {
         email: body.email,
@@ -100,11 +101,11 @@ userRouter.post('/signin', async (c) => {
 
     return c.json({ 
       jwt: token,
-      username: user.name
+      name: user.name,
+      email: user.email
     })
   }
   catch (e) {
-    console.log(e)
     c.status(411)
     return c.text("Something went wrong.")
   }

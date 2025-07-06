@@ -3,14 +3,15 @@ import { useParams } from "react-router-dom"
 import { useBlog } from "../hooks/BlogIdHook"
 import { AppBar } from "../components/AppBar"
 import { Loading } from "../components/Loading"
+import { Avatar } from "../components/Avatar";
 
 const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
 export const FullBlog = ()=> {
     const { id } = useParams()
-    const {loading, blog} = useBlog(id)
+    const {blog} = useBlog(id?id:"")
 
-    if (loading) {
+    if (blog.id==="") {
         return (
             <div>
                 <AppBar />     
@@ -19,7 +20,9 @@ export const FullBlog = ()=> {
         )
     }
 
-    blog.publishDate = new Date(blog.publishDate)
+    const date = new Date(blog.publishDate)
+    if (blog.author.name===null) blog.author.name="Anonymous"
+    blog.author.name = blog.author.name[0].toUpperCase() + blog.author.name.slice(1)
     
     return (
         <div>
@@ -31,7 +34,7 @@ export const FullBlog = ()=> {
                             {blog.title}
                         </div>
                         <div className="text-slate-400 py-3">
-                            Posted on {`${months[blog.publishDate.getMonth()]} ${blog.publishDate.getDate()}, ${blog.publishDate.getFullYear()}`}
+                            Posted on {`${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`}
                         </div>
                         <div className="text-gray-700">
                             {blog.content}
@@ -44,11 +47,11 @@ export const FullBlog = ()=> {
                     </div>
                     <div className="pt-3 flex justify-left">
                         <div className="flex justify-center flex-col pr-4">
-                            <div className="w-7 h-7 rounded-full bg-gray-200" />
+                            <Avatar name={blog.author.name} />
                         </div>
                         <div>
                             <div className="font-bold text-2xl">
-                                {(blog.author.name!==null)?blog.author.name: "Anonymous"}
+                                {blog.author.name}
                             </div>
                             <div className="pt-3 text-gray-500">
                                 This is the description about the author. It is a dummy description. It tells nothing about the author.
